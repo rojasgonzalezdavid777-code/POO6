@@ -96,12 +96,17 @@ document.addEventListener('DOMContentLoaded', () => {
         poiMarkers = [];
         
         data.forEach(poi => {
-            let color = 'blue';
-            if(poi.poi_type == 'police') color = 'darkblue';
-            if(poi.poi_type == 'vet') color = 'green';
-            if(poi.poi_type == 'fiscalia') color = 'red';
+            // ALE: Custom mapping styling based on GeoJSON properties fetched from API
+            let iconUrl = 'https://cdn-icons-png.flaticon.com/512/684/684908.png';
+            if(poi.poi_type === 'police') iconUrl = 'https://cdn-icons-png.flaticon.com/512/2592/2592237.png';
+            if(poi.poi_type === 'vet') iconUrl = 'https://cdn-icons-png.flaticon.com/512/2880/2880562.png';
 
-            const marker = L.marker([poi.lat, poi.lng]).bindPopup(`<b>${poi.name}</b><br>${poi.address}`).addTo(map);
+            const customIcon = L.icon({
+                iconUrl: iconUrl,
+                iconSize: [28, 28]
+            });
+
+            const marker = L.marker([poi.lat, poi.lng], {icon: customIcon}).bindPopup(`<b>${poi.name}</b><br>${poi.address}`).addTo(map);
             poiMarkers.push(marker);
         });
         map.setView([4.6097, -74.0817], 13);
