@@ -135,8 +135,9 @@ def seed_pois():
     c = conn.cursor()
     try:
         # Load directly from GeoJSON files added by David
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         for filename, poi_t in [('veterinarias.geojson', 'vet'), ('policia.geojson', 'police')]:
-            path = os.path.join('..', 'frontend', 'data', filename)
+            path = os.path.join(BASE_DIR, 'frontend', 'data', filename)
             if os.path.exists(path):
                 with open(path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
