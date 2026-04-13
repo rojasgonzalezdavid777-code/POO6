@@ -1,0 +1,9 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {"type": "Feature", "properties": {"name": "Vet Bogota Norte", "address": "Calle 100 # 15-20", "poi_type": "vet"}, "geometry": {"type": "Point", "coordinates": [-74.0531, 4.6865]}},
+    {"type": "Feature", "properties": {"name": "Clínica Veterinaria Sur", "address": "Carrera 30 # 8-12", "poi_type": "vet"}, "geometry": {"type": "Point", "coordinates": [-74.0950, 4.6000]}},
+    {"type": "Feature", "properties": {"name": "Animal Care Suba", "address": "Avenida Suba # 118-20", "poi_type": "vet"}, "geometry": {"type": "Point", "coordinates": [-74.0700, 4.7050]}},
+    {"type": "Feature", "properties": {"name": "Vet Chapinero", "address": "Carrera 7 # 53-15", "poi_type": "vet"}, "geometry": {"type": "Point", "coordinates": [-74.0620, 4.6400]}}
+  ]
+}

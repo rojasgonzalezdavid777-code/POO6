@@ -1,0 +1,9 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {"type": "Feature", "properties": {"name": "CAI Lourdes", "address": "Plaza Lourdes", "poi_type": "police"}, "geometry": {"type": "Point", "coordinates": [-74.0650, 4.6490]}},
+    {"type": "Feature", "properties": {"name": "Estación de Policía Teusaquillo", "address": "Calle 34 # 13-05", "poi_type": "police"}, "geometry": {"type": "Point", "coordinates": [-74.0720, 4.6250]}},
+    {"type": "Feature", "properties": {"name": "Comando Metropolitana de Bogotá", "address": "Av. Caracas # 6-00", "poi_type": "police"}, "geometry": {"type": "Point", "coordinates": [-74.0817, 4.6097]}},
+    {"type": "Feature", "properties": {"name": "CAI Unicentro", "address": "Calle 127 # 15", "poi_type": "police"}, "geometry": {"type": "Point", "coordinates": [-74.0320, 4.7010]}}
+  ]
+}
