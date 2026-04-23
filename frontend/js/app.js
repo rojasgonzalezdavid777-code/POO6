@@ -21,60 +21,72 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const authForm = document.getElementById('auth-form');
     const authSection = document.getElementById('auth-section');
+    const registerSection = document.getElementById('register-section');
+    const registerForm = document.getElementById('register-form');
     const dashboardSection = document.getElementById('dashboard-section');
     const msgEl = document.getElementById('auth-msg');
+    let dogMarker = null;
 
-    // Registration
-    document.getElementById('btn-register').addEventListener('click', async () => {
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        if (!username || !password) return msgEl.innerText = "Por favor ingresa datos";
+    function showDogLocation(petName) {
+        authSection.classList.add('hidden');
+        registerSection.classList.add('hidden');
+        dashboardSection.classList.remove('hidden');
+        document.getElementById('user-display-name').innerText = petName;
+        
+        if (dogMarker) map.removeLayer(dogMarker);
+        
+        // Coordenadas en Bogotá
+        const lat = 4.6097 + (Math.random() * 0.02 - 0.01);
+        const lng = -74.0817 + (Math.random() * 0.02 - 0.01);
+        
+        map.setView([lat, lng], 16);
+        
+        const dogIcon = L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/91/91544.png',
+            iconSize: [40, 40],
+            iconAnchor: [20, 40],
+            popupAnchor: [0, -40]
+        });
+        
+        dogMarker = L.marker([lat, lng], {icon: dogIcon})
+            .bindPopup(`<b>¡Aquí está ${petName}!</b><br>Ubicación actual.`)
+            .addTo(map)
+            .openPopup();
+    }
 
-        try {
-            const res = await fetch(`${API_URL}/register`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({username, password, full_name: username})
-            });
-            const data = await res.json();
-            if (res.ok) {
-                msgEl.innerText = "Registro exitoso. Ahora inicia sesión.";
-                msgEl.style.color = "var(--accent)";
-            } else {
-                msgEl.innerText = data.detail || "Error en registro";
-            }
-        } catch (err) {
-            msgEl.innerText = "Error de conexión";
-        }
+    // Registration Flow
+    document.getElementById('btn-register').addEventListener('click', () => {
+        authSection.classList.add('hidden');
+        registerSection.classList.remove('hidden');
     });
 
-    // Login
-    authForm.addEventListener('submit', async (e) => {
+    document.getElementById('btn-back-login').addEventListener('click', () => {
+        registerSection.classList.add('hidden');
+        authSection.classList.remove('hidden');
+    });
+
+    registerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const petName = document.getElementById('reg-pet').value;
+        showDogLocation(petName);
+    });
+
+    // Login Flow
+    authForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         
-        try {
-            const res = await fetch(`${API_URL}/login`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({username, password})
-            });
-            const data = await res.json();
-            if (res.ok) {
-                currentUser = data;
-                authSection.classList.add('hidden');
-                dashboardSection.classList.remove('hidden');
-                document.getElementById('user-display-name').innerText = currentUser.username;
-                loadDevices();
-            } else {
-                msgEl.innerText = data.detail || "Error en login";
+        if (username && password) {
+            let petName = "el perro";
+            if (username.toLowerCase() === "pardo" && password === "333") {
+                petName = "Pardo";
+            } else if (username) {
+                petName = "la mascota de " + username;
             }
-        } catch (err) {
-            msgEl.innerText = "Error de conexión";
+            showDogLocation(petName);
         }
     });
-
     // Logout
     document.getElementById('btn-logout').addEventListener('click', () => {
         currentUser = null;
@@ -83,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         authSection.classList.remove('hidden');
         if (routePolyline) map.removeLayer(routePolyline);
         Object.values(deviceMarkers).forEach(m => map.removeLayer(m));
+        if (dogMarker) map.removeLayer(dogMarker);
         deviceMarkers = {};
     });
 

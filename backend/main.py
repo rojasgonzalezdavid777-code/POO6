@@ -130,21 +130,30 @@ def get_pois():
 
 @app.route("/seed_pois", methods=["POST"])
 def seed_pois():
+    import json, os
     conn = get_db()
     c = conn.cursor()
-    initial_pois = [
-        {"name": "Comisaría 1ra", "poi_type": "police", "address": "Av. Principal 123", "lat": 4.6097, "lng": -74.0817},
-        {"name": "Veterinaria San Roque", "poi_type": "vet", "address": "Calle Falsa 456", "lat": 4.6120, "lng": -74.0850},
-        {"name": "Fiscalía General", "poi_type": "fiscalia", "address": "Av. Las Americas 789", "lat": 4.6050, "lng": -74.0800}
-    ]
-    for poi in initial_pois:
-        c.execute("SELECT id FROM pois WHERE name = ?", (poi['name'],))
-        if not c.fetchone():
-            c.execute("INSERT INTO pois (name, poi_type, address, lat, lng) VALUES (?, ?, ?, ?, ?)", 
-                      (poi['name'], poi['poi_type'], poi['address'], poi['lat'], poi['lng']))
-    conn.commit()
-    conn.close()
-    return jsonify({"message": "POIs seeded"})
+    try:
+        # Load directly from GeoJSON files added by David
+        for filename, poi_t in [('veterinarias.geojson', 'vet'), ('policia.geojson', 'police')]:
+            path = os.path.join('..', 'frontend', 'data', filename)
+            if os.path.exists(path):
+                with open(path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    for feature in data.get('features', []):
+                        props = feature['properties']
+                        coords = feature['geometry']['coordinates']
+                        name = props.get('name', 'Punto')
+                        c.execute("SELECT id FROM pois WHERE name = ?", (name,))
+                        if not c.fetchone():
+                            c.execute("INSERT INTO pois (name, poi_type, address, lat, lng) VALUES (?, ?, ?, ?, ?)", 
+                                      (name, poi_t, props.get('address', ''), coords[1], coords[0]))
+        conn.commit()
+    except Exception as e:
+        print(f"GeoJSON error: {e}")
+    finally:
+        conn.close()
+    return jsonify({"message": "POIs seeded from GeoJSON files por mp"})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
